@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Diagnostics.Tracing;
 using System.Reflection;
 using static LinqDemo.ListGenerator;
@@ -10,8 +11,13 @@ namespace LinqDemo
         static void Main(string[] args)
         {
             #region First Last (firstor last default) pt1 7&& pt2 
-        
-            List< Product>ProductList = new List<Product>();
+
+            List<Product> ProductList = new List<Product>()
+            {
+                  new Product() { ProductID = 13, ProductName = "Konbu", Category = "Seafood",
+                        UnitPrice = 6.0000M, UnitsInStock = 24 },
+                    
+            };
             //var result = ProductList.First();
             //var result = ProductList.Last();
             // [First(Func), Last(Func)]
@@ -144,13 +150,155 @@ namespace LinqDemo
             //         .countBy(Order => Order.CutsomerId);
             #endregion
 
+            #region Conversion (Imeediate)
+            //List<Product> Productst = ProductList.Where(p => p.ProductID == 1).ToList();
+            //var outOfStockList = ProductList.Where(P => P.UnitsInStock == 0).ToList();
+            //var outOfStockArray = ProductList.Where(P => P.UnitsInStock == 0).ToArray();
+            //var dictionary = ProductList.Where(P => P.UnitsInStock == 0)
+            //                            .ToDictionary(P => P.ProductID);
+            //var dictionaryWithComparer = ProductList.Where(P => P.UnitsInStock == 0)
+            //                                        .ToDictionary(P => P.ProductID,
+            //new CustomEqualityComparer());
 
 
+            //var dictionary02 = ProductList.Where(P => P.UnitsInStock == 0)
+            //                              .ToDictionary(P => P.ProductID, P => P.ProductName);
+            //var sortedCollection = ProductList.Where(p => p.ProductID == 1)
+            //    .ToImmutableList();
+            //sortedCollection.Add(new Product() { ProductName = "Beveragess" });
+            //foreach (var product in sortedCollection)
+            //{
+            //    Console.WriteLine(product);
+            //}
+            #endregion
+
+            #region Genertaion Csting
+            //Call any of them by static method through IEnuemrable 
+            // var result1 = Enumerable.Range(0, 100);
+            #endregion
+
+            #endregion
+
+            #region Set Operators  Examples
+            //var set1 = Enumerable.Range(0, 100);
+            //var set2 = Enumerable.Range(0, 100);
+            //var UnionSewithRemovingDuplicatet=set1.Union(set2);
+            //var UnioonSetWithoutRemovingDuplicates = set1.Union(set2);
+            //var IntersectionSet=set1.Intersect
+            //    (set2);
+            #endregion
+            //I have to implemt IEQutable to compare based on state not refernce
+
+            #region Union
+            var Pset1 = new List<Product>()
+            {
+                 new Product() {ProductID = 1, ProductName = "Chai", Category = "Beverages",
+                            UnitPrice = 18.00M, UnitsInStock = 100},
+                    new Product{ ProductID = 2, ProductName = "Chang", Category = "Beverages",
+                        UnitPrice = 19.0000M, UnitsInStock = 17 },
+                    new Product{ ProductID =2, ProductName = "Chang", Category = "Beverages",
+                        UnitPrice = 19.0M, UnitsInStock = 17 },
+
+            };
+            var Pset2 = new List<Product>()
+            {
+                  new Product{ ProductID = 2, ProductName = "Chang", Category = "Beverages",
+                        UnitPrice = 19.0000M, UnitsInStock = 17 },
+                      new Product{ ProductID = 1, ProductName = "Aniseed Syrup", Category = "Condiments",
+                        UnitPrice = 10.0000M, UnitsInStock = 13 },
+
+            };
+            //var res = Pset1.Union(Pset2);
+
+
+            //foreach (var product in res)
+            //{
+            //    Console.WriteLine(product);
+            //}
+            //same result insted of implemnt ProducComprer but must Imlment equal get hashcode
+           // var res1 = Pset1.UnionBy(Pset2, p => p.ProductID);
+            //incase category is class 
+            //   var res2 = Pset1.UnionBy(Pset2, p => p.Category,new CtaegoryComparer();
+
+            //Console.WriteLine("**************");
+            //foreach (var product in res1)
+            //{
+            //    Console.WriteLine(product);
+            //}
+            #endregion
+
+            #region Intersect     
+            var Result = Pset1.Intersect(Pset2);
+
+
+            //     Result = Pset1.Intersect(Pset2, new ProductEqualityComparer02());
+
+            //    Result = Pset1.IntersectBy(Pset2.Select(P2 => P2.UnitsInStockS), p => p.UnitPrice);
+
+            #endregion
+
+            #region Disctint (filtertion Opertor)
+            //Console.WriteLine("**************");
+            //var res4 = Pset1.Distinct();
+            //foreach (var product in res4)
+            //{
+            //    Console.WriteLine(product);
+            //}
+            //Console.WriteLine("**************");
+
+            //var distinctById = Pset1.Distinct(new ProductEqualityComparer02());
+
+            //foreach (var product in distinctById)
+            //{
+            //    Console.WriteLine(product);
+            //}
+
+            //incase category is sotheing that doesnt override ethashcode , equal
+            //var dstctt = Pset1.DistinctBy(p=>p.Category, new ProductEqualityComparer02());
+            #endregion
+
+
+            #region Concat
+            //merge withour removie dupliates
 
             #endregion
 
 
+            #region Quanitifer operators return boolean
+            //Console.WriteLine(ProductList.Any(p => p.UnitPrice > 20));{local, remote bec orm translated to  sql}
+            //   ProductList.Exists(p=>p.UnitPrice>=200){local}
+            //  Console.WriteLine(ProductList.All(p => p.UnitPrice > 20));
+            //
+            var product = new Product
+            {
+                ProductID = 2,
+                ProductName = "Chang",
+                Category = "Beverages",
+                UnitPrice = 6.0000M,
+                UnitsInStock = 17
+            };
 
+            #region Contain
+            Console.WriteLine(ProductList.Contains(product));
+            Console.WriteLine(ProductList.Contains(product, new ProductEqualityComparer02()));
+            #endregion
+
+            #endregion
+
+            #region Transformation Operators (zip)
+            List<string> Words = new List<string>() { "Ten", "Twenty", "Thirty", "Fourty" };
+
+            long[] Numbers = { 10, 20, 30, 40, 50, 60, 70 };
+
+            var res6= Numbers.Zip(Words);
+
+            foreach (var item in res6)
+                Console.WriteLine(item);
+            var res7 = Numbers.Zip(Words, (Numbers, Words) => $"{Numbers}={Words}");
+
+            foreach (var item in res7)
+                Console.WriteLine(item);
+            #endregion
         }
     }
 }
